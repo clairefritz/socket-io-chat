@@ -6,13 +6,22 @@ app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
+var usernames = {};
+
 io.on('connection', function(socket){
-  console.log('a user connected');
+	socket.on('add user', function(username) {
+		console.log(username + ' connected');
+		socket.username = username;
+		socket.emit('user added', 'Welcome to this chatroom, ' + username + '.');
+		socket.broadcast.emit('user added', username + ' has joined.');
+	});
+
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    console.log(socket.username + ' disconnected');
   });
   socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+    socket.emit('chat message', msg, 'self');
+    socket.broadcast.emit('chat message', msg, socket.username, 'peer');
   });
 });
 
