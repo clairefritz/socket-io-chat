@@ -6,8 +6,6 @@ app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
-var usernames = {};
-
 io.on('connection', function(socket){
 	socket.on('add user', function(username) {
 		console.log(username + ' connected');
@@ -19,9 +17,10 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     console.log(socket.username + ' disconnected');
   });
+
   socket.on('chat message', function(msg){
-    socket.emit('chat message', msg, 'self');
-    socket.broadcast.emit('chat message', msg, socket.username, 'peer');
+    socket.emit('chat message', msg, 'self', socket.username);
+    socket.broadcast.emit('chat message', msg, 'peer', socket.username);
   });
 
   socket.on('typing', function() {

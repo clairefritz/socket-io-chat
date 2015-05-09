@@ -14,14 +14,15 @@
       #messages li { padding: 5px 10px; list-style-type: none; }
       #messages ul.self { background: mediumaquamarine; color: white; text-align: right; }
       #messages ul.peer { background: #eee; }
-      #messages .welcome { color: #CCC; text-align: center; font-style: italic; }
+      .notification { color: #CCC; font-style: italic; }
+      .notification.welcome { text-align: center; }
       .typing { display: none; }
     </style>
   </head>
   <body>
     <div id="messages"></div>
     <div class="bottom">
-      <p class="typing">User is typing...</p>
+      <p class="notification typing">User is typing...</p>
       <form action="">
         <input id="m" autocomplete="off" /><button>Send</button>
       </form>
@@ -40,7 +41,7 @@
         return false;
       });
 
-      $('#m').on('keypress', function(event) {
+      $('#m').on('keypress', function() {
         socket.emit('typing');
       });
 
@@ -51,18 +52,21 @@
         }, 1500);
       });
 
-      var previousSender = '';
-      socket.on('chat message', function(msg, sender){
+      var previousSender = '',
+          displayName;
+      socket.on('chat message', function(msg, sender, username) {
         if (previousSender.length === 0 || sender !== previousSender) {
+          displayName = (sender === 'self')? 'You': username
+          $('#messages').append('<p class="notification message-title">'+ displayName +':</p>');
           $('<ul class="'+ sender +'">').appendTo('#messages').append($('<li class="'+ sender +'">').text(msg));
         } else {
-          $('#messages ul').append($('<li>').text(msg));
+          $('#messages ul:last').append($('<li>').text(msg));
         }
         previousSender = sender;
       });
 
       socket.on('user added', function(msg) {
-        $('#messages').append($('<p class="welcome">').text(msg));
+        $('#messages').append($('<p class="notification welcome">').text(msg));
       });
     </script>
   </body>
