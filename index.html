@@ -54,15 +54,16 @@
 
       var previousSender = '',
           displayName;
-      socket.on('chat message', function(msg, sender, username) {
-        if (previousSender.length === 0 || sender !== previousSender) {
+      socket.on('chat message', function(msg, username, sender) {
+        console.log(msg, username, sender);
+        if (previousSender.length === 0 || username !== previousSender) {
           displayName = (sender === 'self')? 'You': username
           $('#messages').append('<p class="notification message-title">'+ displayName +':</p>');
           $('<ul class="'+ sender +'">').appendTo('#messages').append($('<li class="'+ sender +'">').text(msg));
         } else {
           $('#messages ul:last').append($('<li>').text(msg));
         }
-        previousSender = sender;
+        previousSender = username;
       });
 
       socket.on('user added', function(msg) {

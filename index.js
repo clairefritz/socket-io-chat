@@ -19,8 +19,8 @@ io.on('connection', function(socket){
   });
 
   socket.on('chat message', function(msg){
-    socket.emit('chat message', msg, 'self', socket.username);
-    socket.broadcast.emit('chat message', msg, 'peer', socket.username);
+    socket.emit('chat message', msg, socket.username, 'self');
+    socket.broadcast.emit('chat message', msg, socket.username, 'peer');
   });
 
   socket.on('typing', function() {
